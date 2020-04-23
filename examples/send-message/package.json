@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "textnow-bot": "../..",
+    "puppeteer": "^2.1.1"
+  }
+}

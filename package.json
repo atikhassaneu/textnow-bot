@@ -1,0 +1,19 @@
+{
+  "name": "textnow-bot",
+  "version": "1.0.0",
+  "description": "Send TextNow messages programmatically",
+  "main": "index.js",
+  "repository": "github:george-lim/textnow-bot",
+  "keywords": [
+    "nodejs",
+    "puppeteer",
+    "javascript",
+    "web",
+    "automation",
+    "headless",
+    "textnow",
+    "bot"
+  ],
+  "author": "George Lim",
+  "license": "MIT"
+}
