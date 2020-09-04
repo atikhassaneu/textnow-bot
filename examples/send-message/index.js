@@ -20,7 +20,7 @@
     const client = await page.target().createCDPSession()
     let cookies = null
 
-    // Log into TextNow and get cookies
+    // Import cookies from file
     try {
       console.debug('Importing existing cookies...')
       const cookiesJSON = await fs.readFile('./cookies.json')
@@ -30,12 +30,13 @@
       console.debug('Failed to import existing cookies.')
     }
 
+    // Log into TextNow and get cookies
     try {
       console.debug('Logging in with existing cookies...')
       await page.setCookie(...cookies)
       cookies = await textnow.logIn(page, client)
     }
-    catch(exception) {
+    catch (exception) {
       console.debug('Failed to log in with existing cookies.')
       console.debug('Logging in with account credentials...')
       cookies = await textnow.logIn(page, client, username, password)
@@ -52,7 +53,9 @@
     // Send a message to the current recipient
     console.debug('Sending message...')
     await textnow.sendMessage(page, message)
+
     console.debug('Message sent!')
+    await browser.close()
   }
   catch (exception) {
     console.error(exception)
@@ -61,11 +64,10 @@
       await page.screenshot({ path: './error-screenshot.jpg', type: 'jpeg' })
     }
 
-    process.exit(1)
-  }
-  finally {
     if (browser) {
-      return browser.close()
+      await browser.close()
     }
+
+    process.exit(1)
   }
 })()
