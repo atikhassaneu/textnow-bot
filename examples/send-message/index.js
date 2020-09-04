@@ -1,61 +1,71 @@
 (async () => {
   const puppeteer = require('puppeteer')
-  const bot = require('textnow-bot')
+  const textnow = require('textnow-bot')
   const fs = require('fs').promises
 
   let browser = null
   let page = null
 
+  // Account credentials
+  const username = ''
+  const password = ''
+  // Recipient info
+  const recipient = ''
+  // Message info
+  const message = 'hello world'
+
   try {
     browser = await puppeteer.launch({ headless: true })
     page = await browser.newPage()
-
     const client = await page.target().createCDPSession()
     let cookies = null
 
-    // Provide existing saved cookies from file
+    // Log into TextNow and get cookies
     try {
+      console.debug('Importing existing cookies...')
       const cookiesJSON = await fs.readFile('./cookies.json')
       cookies = JSON.parse(cookiesJSON)
+    }
+    catch (exception) {
+      console.debug('Failed to import existing cookies.')
+    }
 
-      // Log in and get updated cookies
+    try {
+      console.debug('Logging in with existing cookies...')
       await page.setCookie(...cookies)
-      cookies = await bot.login(page, client)
+      cookies = await textnow.logIn(page, client)
     }
-    catch (error) {
-      console.info('Unable to log in using existing cookies...')
-
-      // Provide account credentials for fallback login
-      const username = ''
-      const password = ''
-
-      cookies = await bot.login(page, client, username, password)
+    catch(exception) {
+      console.debug('Failed to log in with existing cookies.')
+      console.debug('Logging in with account credentials...')
+      cookies = await textnow.logIn(page, client, username, password)
     }
 
-    // Save cookies to local file
+    // Save cookies to file
+    console.debug('Successfully logged into TextNow!')
     await fs.writeFile('./cookies.json', JSON.stringify(cookies))
 
-    // Select a conversation
-    const recipient = ''
-    await bot.selectConversation(page, recipient)
+    // Select a conversation using recipient info
+    console.debug('Selecting conversation...')
+    await textnow.selectConversation(page, recipient)
 
-    // Send message in conversation
-    const message = 'hello world'
-    const delay = 500
-    await bot.sendMessage(page, message, delay)
+    // Send a message to the current recipient
+    console.debug('Sending message...')
+    await textnow.sendMessage(page, message)
+    console.debug('Message sent!')
   }
-  catch (error) {
-    console.error(error)
+  catch (exception) {
+    console.error(exception)
 
-    if (page !== null) {
-      await page.screenshot({ path: './error-main.jpg', type: 'jpeg' })
+    if (page) {
+      await page.screenshot({ path: './error-screenshot.jpg', type: 'jpeg' })
     }
 
     process.exit(1)
   }
   finally {
-    if (browser !== null) {
-      await browser.close()
+    if (browser) {
+      return browser.close()
     }
   }
 })()

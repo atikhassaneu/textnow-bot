@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "textnow-bot": "../..",
-    "puppeteer": "^2.1.1"
+    "puppeteer": "^5.2.1",
+    "textnow-bot": "../.."
   }
 }

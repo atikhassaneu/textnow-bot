@@ -1,28 +1,25 @@
 module.exports = {
   /**
-   * Log into TextNow and renew cookies
+   * Log into TextNow and get cookies
    * @param  {object} page     Puppeteer browser page
    * @param  {object} client   Puppeteer CDPSession
    * @param  {string} username Optional account credential
    * @param  {string} password Optional account credential
    * @return {object}          Updated login cookies
    */
-  login: async (page, client, username, password) => {
+  logIn: async (page, client, username, password) => {
+    await Promise.all([
+      page.goto('https://www.textnow.com/login'),
+      page.waitForNavigation({ waitUntil: 'networkidle2' })
+    ])
+
     if (username && password) {
-      console.info('Logging in with account credentials...')
-
-      await Promise.all([
-        page.goto('http://textnow.com/login'),
-        page.waitForNavigation({ waitUntil: 'networkidle2' })
-      ])
-
       await page.type('#txt-username', username)
       await page.type('#txt-password', password)
 
-      const loginButton = await page.waitForSelector('#btn-login')
-
+      const logInButton = await page.waitForSelector('#btn-login')
       await Promise.all([
-        loginButton.click(),
+        logInButton.click(),
         page.waitForNavigation()
       ])
 
@@ -30,17 +27,10 @@ module.exports = {
       return cookies
     }
 
-    console.info('Logging in with existing cookies...')
-
-    await Promise.all([
-      page.goto('https://www.textnow.com/login'),
-      page.waitForNavigation({ waitUntil: 'networkidle2' })
-    ])
-
     const isLoggedIn = page.url().includes('/messaging')
 
     if (!isLoggedIn) {
-      throw new Error('Existing cookies are invalid / expired')
+      throw new Error('Failed to log into TextNow.')
     }
 
     const cookies = (await client.send('Network.getAllCookies')).cookies
@@ -53,8 +43,6 @@ module.exports = {
    * @param {string} recipient Recipient contact info
    */
   selectConversation: async(page, recipient) => {
-    console.info('Selecting conversation...')
-
     await Promise.all([
       page.goto('https://www.textnow.com/messaging'),
       page.waitForNavigation({ waitUntil: 'networkidle2' })
@@ -74,8 +62,6 @@ module.exports = {
    * @param {number} delay   Optional delay after sending message (ms)
    */
   sendMessage: async (page, message, delay) => {
-    console.info('Sending message...')
-
     const messageField = await page.waitForSelector('#text-input')
     await messageField.type(message)
     await page.keyboard.press('Enter')
