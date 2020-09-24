@@ -11,10 +11,13 @@ module.exports.logIn = async (page, client, username, password) => {
     page.goto('https://www.textnow.com/login'),
     page.waitForNavigation({ waitUntil: 'networkidle2' })
   ]);
+  await page.waitFor(1000);
 
   if (username && password) {
     await page.type('#txt-username', username);
+    await page.waitFor(1000);
     await page.type('#txt-password', password);
+    await page.waitFor(1000);
 
     const logInButton = await page.waitForSelector('#btn-login');
     await Promise.all([
@@ -47,11 +50,12 @@ module.exports.selectConversation = async(page, recipient) => {
     page.waitForNavigation({ waitUntil: 'networkidle2' })
   ]);
   await page.waitFor(1000);
-
   await page.$eval('#newText', element => element.click());
-
+  await page.waitFor(1000);
   const recipientField = await page.waitForSelector('.newConversationTextField');
+  await page.waitFor(1000);
   await recipientField.type(recipient);
+  await page.waitFor(1000);
   await page.keyboard.press('Enter');
 }
 
@@ -62,8 +66,9 @@ module.exports.selectConversation = async(page, recipient) => {
  */
 module.exports.sendMessage = async (page, message) => {
   await page.waitFor(1000);
-
   const messageField = await page.waitForSelector('#text-input');
+  await page.waitFor(1000);
   await messageField.type(message);
+  await page.waitFor(1000);
   await page.keyboard.press('Enter');
 }
