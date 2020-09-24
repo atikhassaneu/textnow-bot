@@ -46,6 +46,7 @@ module.exports.selectConversation = async(page, recipient) => {
     page.goto('https://www.textnow.com/messaging'),
     page.waitForNavigation({ waitUntil: 'networkidle2' })
   ]);
+  await page.waitFor(1000);
 
   await page.$eval('#newText', element => element.click());
 
@@ -58,11 +59,11 @@ module.exports.selectConversation = async(page, recipient) => {
  * Send a message to the current recipient
  * @param {object} page    Puppeteer browser page
  * @param {string} message Message content
- * @param {number} delay   Optional delay after sending message (ms)
  */
-module.exports.sendMessage = async (page, message, delay) => {
+module.exports.sendMessage = async (page, message) => {
+  await page.waitFor(1000);
+
   const messageField = await page.waitForSelector('#text-input');
   await messageField.type(message);
   await page.keyboard.press('Enter');
-  await page.waitFor(delay || 500);
 }

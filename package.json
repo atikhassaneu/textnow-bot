@@ -1,6 +1,6 @@
 {
   "name": "textnow-bot",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Send TextNow messages programmatically",
   "main": "index.js",
   "repository": "github:george-lim/textnow-bot",
